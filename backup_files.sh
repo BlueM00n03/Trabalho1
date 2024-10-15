@@ -41,5 +41,21 @@ function backup_files() {
 
         fi
     done
+    for file in "$target_dir"/*; do
+        if [ -f "$file" ];then
+            filename=$(basename "$file")
+            found_flag=false
+            for file2 in "$working_dir"/*; do
+                file2_name=$(basename "$file2")
+                if [[ "$filename" == "$file2_name" ]]; then
+                    found_flag=true
+                    if [[ $found_flag == "false" ]];then
+                        echo "rm $target_dir/$file" 
+                        rm $target_dir/$file
+                    fi
+
+        fi
+    done
+
 }
 backup_files "$1" "$2"
