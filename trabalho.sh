@@ -9,8 +9,4 @@ while getopts 'cbr:' flag; do
     *) echo "Invalid option: -${OPTARG}" >&2; exit 1 ;;
   esac
 done
-u better work
-
-
-ola
 
