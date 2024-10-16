@@ -28,17 +28,20 @@ function backup_files() {
                 if [[ "$filename" == "$file2_name" ]]; then
                     found_flag=true
                     if [[ $(date -r $file +%s) -gt $(date -r $file2 +%s) ]];then
-                        echo "cp -a ""$file" "$file2 12345"
-                        cp -a "$file" "$file2"
+                        if [[ $c_flag == "false" ]]; then
+                            cp -a "$file" "$file2"
+                        fi
+                        echo "cp -a ""$file" "$file2"
                     fi
                 fi
             
             done
             if [[ $found_flag == "false" ]];then
+                if [[ $c_flag == "false" ]]; then
+                    cp -a "$file" "$target_dir/$filename"
+                fi        
                 echo "cp -a $file" "$target_dir/""$filename"
-                cp -a "$file" "$target_dir/$filename"
             fi
-
         fi
     done
     for file in "$target_dir"/*; do
@@ -49,13 +52,13 @@ function backup_files() {
                 file2_name=$(basename "$file2")
                 if [[ "$filename" == "$file2_name" ]]; then
                     found_flag=true
-                    if [[ $found_flag == "false" ]];then
-                        echo "rm $target_dir/$file" 
-                        rm $target_dir/$file
-                    fi
-
+                fi
+            done
+            if [[ $found_flag == "false" ]];then
+                echo "rm $file" 
+                rm $file
+            fi
         fi
     done
-
 }
 backup_files "$1" "$2"
