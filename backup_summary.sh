@@ -24,6 +24,13 @@
         *) echo "Invalid option: -${OPTARG}" >&2; exit 1 ;;
         esac
     done
+    n_errs=0
+    n_warns=0
+    n_updates=0
+    n_copied=0
+    size_copied=0
+    n_dels=0
+    size_dels=0
     for file in "$working_dir"/*; do
         if [[ $b_flag == 'true' ]];then
             if grep -Fxq "$file" "$b_arg"
@@ -46,16 +53,34 @@
                     found_flag=true
                     if [[ $(date -r $file +%s) -gt $(date -r $file2 +%s) ]];then
                         if [[ $c_flag == "false" ]]; then
-                            cp -a "$file" "$file2"
+                            
+                            if ! cp -a "$file" "$file2";then
+                                n_errs++;
+                                echo "Error: Failed to update $file to $file2"
+
+                            else
+                                n_updates=$((n_updates + 1))
+                                echo "cp -a ""$file" "$file2"
+                            fi
                         fi
-                        echo "cp -a ""$file" "$file2"
+                    elif [[ $(date -r $file +%s) -lt $(date -r $file2 +%s) ]];then
+                        echo "WARNING: backup entry $file2 is newer than $file; Should not happen"
+                        n_warns=$((n_warns + 1))
                     fi
                 fi
             
             done
             if [[ $found_flag == "false" ]];then
                 if [[ $c_flag == "false" ]]; then
-                    cp -a "$file" "$target_dir/$filename"
+                    
+                    if ! cp -a "$file" "$target_dir/$filename";then
+                        n_errs++;
+                        echo "Error: Failed to copy $file to $target_dir/$filename"
+
+                    else
+                        n_copied++
+                        size_copied+=$(stat -c%s "$file")
+                    fi                    
                 fi        
                 echo "cp -a $file" "$target_dir/""$filename"
             fi
@@ -75,7 +100,11 @@
             done
             if [[ $found_flag == "false" ]];then
                 echo "rm $file" 
-                rm $file
+                if [[ c_flag == "false" ]];then
+                    rm $file
+                    n_dels++
+                    size_dels+=$(stat -c%s "$file")
+                fi
             fi
         fi
     done

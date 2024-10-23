@@ -12,4 +12,4 @@ while getopts 'cb:r:' flag; do
 
 echo "$@"
 
-echo "${@:1:$#-1}" one
+echo "${@:1:$#-2}" one "${@: -1}"
