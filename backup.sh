@@ -12,6 +12,8 @@
     working_dir="$1"
     target_dir="$2"
     c_flag='false'
+    b_flag='false'
+    r_flag='false'
     while getopts 'cb:r:' flag; do
         case "${flag}" in
         c) c_flag='true' ;;
@@ -23,7 +25,19 @@
         esac
     done
     for file in "$working_dir"/*; do
+        if [[ $b_flag == 'true' ]];then
+            if grep -Fxq "$file" "$b_arg"
+            then
+                continue
+            fi
+
+        fi
         if [ -f "$file" ];then
+            if [[ $r_flag == 'true' ]];then
+                if ! [[ $file =~ $r_arg ]];then
+                    continue
+                fi
+            fi
             filename=$(basename "$file")
             found_flag=false
             for file2 in "$target_dir"/*; do
