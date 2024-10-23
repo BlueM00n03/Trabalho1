@@ -74,8 +74,10 @@
                 fi
             done
             if [[ $found_flag == "false" ]];then
-                echo "rm $file" 
-                rm $file
+                echo "rm $file"
+                if [[ $c_flag == "false" ]];then 
+                    rm $file
+                fi
             fi
         fi
     done
