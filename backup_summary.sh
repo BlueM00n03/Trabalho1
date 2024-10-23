@@ -60,7 +60,7 @@ for file in "$working_dir"/*; do
                             n_updates=$((n_updates + 1))
                         fi
                     fi
-                elif [[ $(date -r $file +%s) -lt $(date -r $file2 +%s) ]]then
+                elif [[ $(date -r $file +%s) -lt $(date -r $file2 +%s) ]];then
                     echo "WARNING: backup entry $file2 is newer than $file;Should not happen"
                     n_warns=$((n_warns + 1))
                 fi
