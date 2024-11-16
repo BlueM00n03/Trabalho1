@@ -111,4 +111,4 @@ for file in "$target_dir"/*; do
         fi
     fi
 done
-echo "While backuping $working_dir: $n_errs Errors; $n_warns Warnings; $n_updates Updated; $n_copied Copied ("$size_copied"B); $n_dels deleted ("$size_dels"B)"
+echo "While backuping $working_dir: $n_errs Errors; $n_warns Warnings; $n_updates Updated; $n_copied Copied ("$size_copied"B); $n_dels Deleted ("$size_dels"B)"
