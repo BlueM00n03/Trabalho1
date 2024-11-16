@@ -1,5 +1,19 @@
 #!/bin/bash
-
+    args="$@"
+    c_flag='false'
+    b_flag='false'
+    r_flag='false'
+    while getopts ':cb:r:' flag; do
+        case "${flag}" in
+        c) c_flag='true' ;;
+        b) b_flag='true' 
+            b_arg=${OPTARG};;
+        r) r_flag='true' 
+            r_arg=${OPTARG};;
+        *) echo "Invalid option: -${flag}" >&2 ; exit 1 ;;
+        esac
+    done
+    shift $((OPTIND-1))
     if [[ ! -d "$2" ]]; then
         if [[ -d "$1" ]]; then
             mkdir "$2"
@@ -11,19 +25,6 @@
     fi
     working_dir="$1"
     target_dir="$2"
-    c_flag='false'
-    b_flag='false'
-    r_flag='false'
-    while getopts 'cb:r:' flag; do
-        case "${flag}" in
-        c) c_flag='true' ;;
-        b) b_flag='true' 
-            b_arg=${OPTARG};;
-        r) r_flag='true' 
-            r_arg=${OPTARG};;
-        *) echo "Invalid option: -${OPTARG}" >&2; exit 1 ;;
-        esac
-    done
     for file in "$working_dir"/*; do
         if [[ $b_flag == 'true' ]];then
             if grep -Fxq "$file" "$b_arg"
