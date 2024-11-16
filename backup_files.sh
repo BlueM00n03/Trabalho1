@@ -1,5 +1,5 @@
 #!/bin/bash
-
+shopt -s dotglob
 c_flag='false'
 while getopts 'c' flag; do
     case "${flag}" in

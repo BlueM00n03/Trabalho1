@@ -1,4 +1,5 @@
 #!/bin/bash
+shopt -s dotglob
 args=("$@")
 c_flag='false'
 b_flag='false'
