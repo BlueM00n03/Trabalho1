@@ -13,18 +13,18 @@ while getopts ':cb:r:' flag; do
     *) echo "Invalid option: -${OPTARG}" >&2; exit 1 ;;
     esac
 done
-if [[ ! -d "$2" ]]; then
-    if [[ -d "$1" ]]; then
+if [[ -d "$1" ]]; then
+    if [[ ! -d "$2" ]]; then
         mkdir "$2"
-        echo "The destiny directory didn't exist but was created."
+        echo "The destiny directory didn't exist but was created.">&2
     fi
 else
-    echo "Warning: The source directory ($1) does not exist."
+    echo "Warning: The source directory ($1) does not exist.">&2
     exit 1
 fi
 working_dir="$1"
 target_dir="$2"
-for file in "$working_dir"/*; do
+for file in "$working_dir"/*; do 
     if [[ $b_flag == 'true' ]];then
         if grep -Fxq "$file" "$b_arg"
         then
@@ -47,11 +47,11 @@ for file in "$working_dir"/*; do
                     echo "cp -a ""$file" "$file2"
                     if [[ $c_flag == "false" ]]; then
                         if ! cp -a "$file" "$file2";then
-                            echo "Error: Failed to update $file to $file2"
+                            echo "Error: Failed to update $file to $file2">&2
                         fi
                     fi
                 elif [[ $(date -r $file +%s) -lt $(date -r $file2 +%s) ]];then
-                    echo "WARNING: backup entry $file2 is newer than $file; Should not happen"
+                    echo "WARNING: backup entry $file2 is newer than $file; Should not happen">&2
                 fi
             fi
         
@@ -60,12 +60,15 @@ for file in "$working_dir"/*; do
             echo "cp -a $file" "$target_dir/""$filename"
             if [[ $c_flag == "false" ]]; then
                 if ! cp -a "$file" "$target_dir/$filename";then
-                    echo "Error: Failed to copy $file to $target_dir$filename"
+                    echo "Error: Failed to copy $file to $target_dir$filename">&2
                 fi                    
             fi        
         fi
     elif [[ -d "$file" ]];then
-        ./backup.sh "${args[@]:0: ${#args[@]}-2}" "$file" "${args[@]: -1}"
+        if [[ ! -d "${args[@]: -1}/$(basename "$file")" ]];then
+            mkdir "${args[@]: -1}/$(basename "$file")"
+        fi
+        ./backup.sh "${args[@]:0: ${#args[@]}-2}" "$file" "${args[@]: -1}/$(basename "$file")"
     fi
 done
 for file in "$target_dir"/*; do
@@ -82,7 +85,7 @@ for file in "$target_dir"/*; do
             echo "rm $file" 
             if [[ $c_flag == "false" ]];then
                 if ! rm $file;then
-                    echo "Error: Failed to delete $file"
+                    echo "Error: Failed to delete $file">&2
                 fi
             fi
         fi
