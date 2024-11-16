@@ -1,5 +1,5 @@
 #!/bin/bash
-    args="$@"
+    args=("$@")
     c_flag='false'
     b_flag='false'
     r_flag='false'
@@ -61,7 +61,7 @@
                 echo "cp -a $file" "$target_dir/""$filename"
             fi
         elif [[ -d "$file" ]];then
-            ./backup.sh "${@:1:$#-2}" "$file" "${@: -1}"
+            ./backup.sh "${args[@]:0: ${#args[@]}-2}" "2" "${args[@]: -1}"
         fi
     done
     for file in "$target_dir"/*; do

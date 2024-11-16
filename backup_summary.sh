@@ -1,16 +1,5 @@
 #!/bin/bash
-
-if [[ ! -d "$2" ]]; then
-    if [[ -d "$1" ]]; then
-        mkdir "$2"
-        echo "The destiny directory didn't exist but was created."
-    fi
-else
-    echo "Warning: The source directory ($1) does not exist."
-    exit 1
-fi
-working_dir="$1"
-target_dir="$2"
+args=("$@")
 c_flag='false'
 b_flag='false'
 r_flag='false'
@@ -24,6 +13,17 @@ while getopts 'cb:r:' flag; do
     *) echo "Invalid option: -${OPTARG}" >&2; exit 1 ;;
     esac
 done
+if [[ ! -d "$2" ]]; then
+    if [[ -d "$1" ]]; then
+        mkdir "$2"
+        echo "The destiny directory didn't exist but was created."
+    fi
+else
+    echo "Warning: The source directory ($1) does not exist."
+    exit 1
+fi
+working_dir="$1"
+target_dir="$2"
 n_errs=0
 n_warns=0
 n_updates=0
@@ -80,7 +80,7 @@ for file in "$working_dir"/*; do
             fi        
         fi
     elif [[ -d "$file" ]];then
-        ./backup.sh "${@:1:$#-2}" "$file" "${@: -1}"
+        ./backup.sh "${args[@]:0: ${#args[@]}-2}" "2" "${args[@]: -1}"
     fi
 done
 for file in "$target_dir"/*; do
