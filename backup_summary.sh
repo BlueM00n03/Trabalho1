@@ -3,7 +3,7 @@ args=("$@")
 c_flag='false'
 b_flag='false'
 r_flag='false'
-while getopts 'cb:r:' flag; do
+while getopts ':cb:r:' flag; do
     case "${flag}" in
     c) c_flag='true' ;;
     b) b_flag='true' 
@@ -80,7 +80,7 @@ for file in "$working_dir"/*; do
             fi        
         fi
     elif [[ -d "$file" ]];then
-        ./backup.sh "${args[@]:0: ${#args[@]}-2}" "2" "${args[@]: -1}"
+        ./backup.sh "${args[@]:0: ${#args[@]}-2}" "$file" "${args[@]: -1}"
     fi
 done
 for file in "$target_dir"/*; do
