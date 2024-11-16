@@ -55,15 +55,15 @@ for file in "$working_dir"/*; do
                     echo "cp -a ""$file" "$file2"
                     if [[ $c_flag == "false" ]]; then
                         if ! cp -a "$file" "$file2";then
-                            n_errs++;
+                            ((n_errs++));
                             echo "Error: Failed to update $file to $file2"
                         else
-                            n_updates=$((n_updates + 1))
+                            ((n_updates++))
                         fi
                     fi
                 elif [[ $(date -r $file +%s) -lt $(date -r $file2 +%s) ]];then
                     echo "WARNING: backup entry $file2 is newer than $file;Should not happen"
-                    n_warns=$((n_warns + 1))
+                    $((n_warns++))
                 fi
             fi
         
@@ -72,11 +72,11 @@ for file in "$working_dir"/*; do
             echo "cp -a $file" "$target_dir/""$filename"
             if [[ $c_flag == "false" ]]; then
                 if ! cp -a "$file" "$target_dir/$filename";then
-                    n_errs++;
+                    ((n_errs++))
                     echo "Error: Failed to copy $file to $target_dir$filename"
                 else
-                    n_copied++
-                    size_copied+=$(stat -c%s "$file")
+                    ((n_copied++))
+                    ((size_copied+=$(stat -c%s "$file")))
                 fi                    
             fi        
         fi
@@ -101,14 +101,14 @@ for file in "$target_dir"/*; do
             echo "rm $file" 
             if [[ $c_flag == "false" ]];then
                 if ! rm $file;then
-                    n_errs++;
+                    ((n_errs++))
                     echo "Error: Failed to delete $file"
                 else
-                    n_dels++
-                    size_dels+=$(stat -c%s "$file")
+                    ((n_dels++))
+                    ((size_dels+=$(stat -c%s "$file")))
                 fi
             fi
         fi
     fi
 done
-echo "While backuping $working_dir: $n_errs Errors; $n_warns Warnings; $n_updates Updated; $n_copied Copied ($(size_copied)B); $n_dels deleted ($(size_dels)B)"
+echo "While backuping $working_dir: $n_errs Errors; $n_warns Warnings; $n_updates Updated; $n_copied Copied ("$size_copied"B); $n_dels deleted ("$size_dels"B)"
