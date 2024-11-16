@@ -13,8 +13,8 @@ while getopts ':cb:r:' flag; do
     *) echo "Invalid option: -${OPTARG}" >&2; exit 1 ;;
     esac
 done
-if [[ ! -d "$2" ]]; then
-    if [[ -d "$1" ]]; then
+if [[ -d "$1" ]]; then
+    if [[ ! -d "$2" ]]; then
         mkdir "$2"
         echo "The destiny directory didn't exist but was created."
     fi
@@ -80,7 +80,10 @@ for file in "$working_dir"/*; do
             fi        
         fi
     elif [[ -d "$file" ]];then
-        ./backup.sh "${args[@]:0: ${#args[@]}-2}" "$file" "${args[@]: -1}"
+        if [[ ! -d "${args[@]: -1}/$(basename "$file")" ]];then
+            mkdir "${args[@]: -1}/$(basename "$file")"
+        fi
+        ./backup_summary.sh "${args[@]:0: ${#args[@]}-2}" "$file" "${args[@]: -1}/$(basename "$file")"
     fi
 done
 for file in "$target_dir"/*; do
