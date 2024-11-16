@@ -55,8 +55,10 @@ for file in "$target_dir"/*; do
             fi
         done
         if [[ $found_flag == "false" ]];then
+            if [[ $c_flag == "false" ]]; then
+                rm $file
+            fi
             echo "rm $file" 
-            rm $file
         fi
     fi
 done
