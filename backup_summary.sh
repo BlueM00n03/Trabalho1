@@ -1,5 +1,18 @@
 #!/bin/bash
-
+args=("$@")
+c_flag='false'
+b_flag='false'
+r_flag='false'
+while getopts ':cb:r:' flag; do
+    case "${flag}" in
+    c) c_flag='true' ;;
+    b) b_flag='true' 
+        b_arg=${OPTARG};;
+    r) r_flag='true' 
+        r_arg=${OPTARG};;
+    *) echo "Invalid option: -${OPTARG}" >&2; exit 1 ;;
+    esac
+done
 if [[ ! -d "$2" ]]; then
     if [[ -d "$1" ]]; then
         mkdir "$2"
@@ -11,19 +24,6 @@ else
 fi
 working_dir="$1"
 target_dir="$2"
-c_flag='false'
-b_flag='false'
-r_flag='false'
-while getopts 'cb:r:' flag; do
-    case "${flag}" in
-    c) c_flag='true' ;;
-    b) b_flag='true' 
-        b_arg=${OPTARG};;
-    r) r_flag='true' 
-        r_arg=${OPTARG};;
-    *) echo "Invalid option: -${OPTARG}" >&2; exit 1 ;;
-    esac
-done
 n_errs=0
 n_warns=0
 n_updates=0
@@ -80,7 +80,7 @@ for file in "$working_dir"/*; do
             fi        
         fi
     elif [[ -d "$file" ]];then
-        ./backup.sh "${@:1:$#-2}" "$file" "${@: -1}"
+        ./backup.sh "${args[@]:0: ${#args[@]}-2}" "$file" "${args[@]: -1}"
     fi
 done
 for file in "$target_dir"/*; do
