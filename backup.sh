@@ -1,19 +1,32 @@
 #!/bin/bash
 shopt -s dotglob
+
 args=("$@")
+
 c_flag='false'
 b_flag='false'
 r_flag='false'
 while getopts ':cb:r:' flag; do
     case "${flag}" in
     c) c_flag='true' ;;
+
     b) b_flag='true' 
         b_arg=${OPTARG};;
+
     r) r_flag='true' 
         r_arg=${OPTARG};;
+
     *) echo "Invalid option: -${OPTARG}" >&2; exit 1 ;;
     esac
 done
+
+shift $((OPTIND-1))
+
+if [[ $# != 2 ]]; then
+    echo "Usage: ./backup.sh [-c] [-b tfile] [-r regexpr] dir_trabalho dir_backup">&2
+    exit 1
+fi
+
 if [[ -d "$1" ]]; then
     if [[ ! -d "$2" ]]; then
         mkdir "$2"
@@ -23,22 +36,26 @@ else
     echo "Warning: The source directory ($1) does not exist.">&2
     exit 1
 fi
+
 working_dir="$1"
 target_dir="$2"
+
 for file in "$working_dir"/*; do 
+    filename=$(basename "$file")
     if [[ $b_flag == 'true' ]];then
-        if grep -Fxq "$file" "$b_arg"
+        if grep -Fxq "$filename" "$b_arg"
         then
             continue
         fi
     fi
+
     if [ -f "$file" ];then
         if [[ $r_flag == 'true' ]];then
-            if ! [[ $file =~ $r_arg ]];then
+            if ! [[ $filename =~ $r_arg ]];then
                 continue
             fi
         fi
-        filename=$(basename "$file")
+
         found_flag=false
         for file2 in "$target_dir"/*; do
             file2_name=$(basename "$file2")
@@ -51,12 +68,13 @@ for file in "$working_dir"/*; do
                             echo "Error: Failed to update $file to $file2">&2
                         fi
                     fi
+
                 elif [[ $(date -r $file +%s) -lt $(date -r $file2 +%s) ]];then
                     echo "WARNING: backup entry $file2 is newer than $file; Should not happen">&2
                 fi
-            fi
-        
+            fi        
         done
+        
         if [[ $found_flag == "false" ]];then
             echo "cp -a $file" "$target_dir/""$filename"
             if [[ $c_flag == "false" ]]; then

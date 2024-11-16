@@ -23,6 +23,7 @@ else
     echo "Warning: The source directory ($1) does not exist."
     exit 1
 fi
+shift $((OPTIND-1))
 working_dir="$1"
 target_dir="$2"
 n_errs=0
@@ -63,7 +64,7 @@ for file in "$working_dir"/*; do
                     fi
                 elif [[ $(date -r $file +%s) -lt $(date -r $file2 +%s) ]];then
                     echo "WARNING: backup entry $file2 is newer than $file;Should not happen"
-                    $((n_warns++))
+                    ((n_warns++))
                 fi
             fi
         
