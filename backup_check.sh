@@ -20,11 +20,13 @@ for file in "$target_dir"/*; do
         file2_name=$(basename "$file2")
         if [[ "$filename" == "$file2_name" ]]; then    
             if [ -f "$file" ];then
-                if [[ $(( $(md5sum $filename) - $(md5sum $file2_name) )) != 0 ]]; then
+                hashf1=($(md5sum $file))
+                hashf2=($(md5sum $file2))
+                if [[ $hashf1 == $hashf2 ]]; then
+                    echo "file "$file2" "$file" dont differ."
+                else
                     echo "file "$file2" "$file" differ."
                 fi
-            else
-                ./backup_summary.sh "${@: -2}/$(basename "$file")" "$file"
             fi
         fi
     done

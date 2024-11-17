@@ -14,16 +14,24 @@ while getopts ':cb:r:' flag; do
     *) echo "Invalid option: -${OPTARG}" >&2; exit 1 ;;
     esac
 done
+
+shift $((OPTIND-1))
+
+if [[ $# != 2 ]]; then
+    echo "Usage: ./backup.sh [-c] [-b tfile] [-r regexpr] dir_trabalho dir_backup">&2
+    exit 1
+fi
+
 if [[ -d "$1" ]]; then
     if [[ ! -d "$2" ]]; then
         mkdir "$2"
-        echo "The destiny directory didn't exist but was created."
+        echo "The destiny directory didn't exist but was created.">&2
     fi
 else
-    echo "Warning: The source directory ($1) does not exist."
+    echo "Warning: The source directory ($1) does not exist.">&2
     exit 1
 fi
-shift $((OPTIND-1))
+
 working_dir="$1"
 target_dir="$2"
 n_errs=0
@@ -34,19 +42,21 @@ size_copied=0
 n_dels=0
 size_dels=0
 for file in "$working_dir"/*; do
+    filename=$(basename "$file")
     if [[ $b_flag == 'true' ]];then
-        if grep -Fxq "$file" "$b_arg"
+        if grep -Fxq "$filename" "$b_arg"
         then
             continue
         fi
     fi
+
     if [ -f "$file" ];then
         if [[ $r_flag == 'true' ]];then
-            if ! [[ $file =~ $r_arg ]];then
+            if ! [[ $filename =~ $r_arg ]];then
                 continue
             fi
         fi
-        filename=$(basename "$file")
+
         found_flag=false
         for file2 in "$target_dir"/*; do
             file2_name=$(basename "$file2")
