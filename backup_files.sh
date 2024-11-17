@@ -1,18 +1,30 @@
 #!/bin/bash
+
+function usage(){
+    echo "Usage: ./backup_files.sh [-c] dir_trabalho dir_backup">&2
+}
+
 shopt -s dotglob
+
 c_flag='false'
 while getopts 'c' flag; do
     case "${flag}" in
     c) c_flag='true' ;;
-    *) echo "Invalid option: -${OPTARG}" >&2; exit 1 ;;
+    *) usage; exit 1 ;;
     esac
 done
 shift $((OPTIND-1))
-if [[ -d "$1" ]]; then
-if [[ ! -d "$2" ]]; then
-    mkdir $2
-    echo "The destiny directory didn't exist but was created."
+
+if [[ $# != 2 ]]; then
+    usage
+    exit 1
 fi
+
+if [[ -d "$1" ]]; then
+    if [[ ! -d "$2" ]]; then
+        mkdir $2
+        echo "The destiny directory didn't exist but was created."
+    fi
 else
     echo "Warning: The source directory ($1) does not exist."
     exit 1

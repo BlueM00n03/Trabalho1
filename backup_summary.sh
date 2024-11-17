@@ -1,4 +1,9 @@
 #!/bin/bash
+
+function usage(){
+    echo "Usage: ./backup_summary.sh [-c] [-b tfile] [-r regexpr] dir_trabalho dir_backup">&2
+}
+
 shopt -s dotglob
 args=("$@")
 c_flag='false'
@@ -11,14 +16,14 @@ while getopts ':cb:r:' flag; do
         b_arg=${OPTARG};;
     r) r_flag='true' 
         r_arg=${OPTARG};;
-    *) echo "Invalid option: -${OPTARG}" >&2; exit 1 ;;
+    *) usage; exit 1 ;;
     esac
 done
 
 shift $((OPTIND-1))
 
 if [[ $# != 2 ]]; then
-    echo "Usage: ./backup.sh [-c] [-b tfile] [-r regexpr] dir_trabalho dir_backup">&2
+    usage
     exit 1
 fi
 
@@ -93,7 +98,13 @@ for file in "$working_dir"/*; do
         fi
     elif [[ -d "$file" ]];then
         if [[ ! -d "${args[@]: -1}/$(basename "$file")" ]];then
-            mkdir "${args[@]: -1}/$(basename "$file")"
+            echo "mkdir ${args[@]: -1}/$(basename "$file")"
+            if [[ $c_flag == "false" ]]; then
+                if ! mkdir "${args[@]: -1}/$(basename "$file")";then
+                    ((n_errs++))
+                    echo "Error: Failed to create new folder $file in $target_dir"
+                fi
+            fi
         fi
         ./backup_summary.sh "${args[@]:0: ${#args[@]}-2}" "$file" "${args[@]: -1}/$(basename "$file")"
     fi

@@ -1,4 +1,9 @@
 #!/bin/bash
+
+function usage {
+    echo "Usage: ./backup.sh [-c] [-b tfile] [-r regexpr] dir_trabalho dir_backup">&2
+}
+
 shopt -s dotglob
 
 args=("$@")
@@ -16,14 +21,14 @@ while getopts ':cb:r:' flag; do
     r) r_flag='true' 
         r_arg=${OPTARG};;
 
-    *) echo "Invalid option: -${OPTARG}" >&2; exit 1 ;;
+    *) usage; exit 1 ;;
     esac
 done
 
 shift $((OPTIND-1))
 
 if [[ $# != 2 ]]; then
-    echo "Usage: ./backup.sh [-c] [-b tfile] [-r regexpr] dir_trabalho dir_backup">&2
+    usage
     exit 1
 fi
 
@@ -43,12 +48,16 @@ target_dir="$2"
 for file in "$working_dir"/*; do 
     filename=$(basename "$file")
     if [[ $b_flag == 'true' ]];then
+        echo $file
+        a=$(grep -Fxq "$filename" "$b_arg")
+        echo $?
         if grep -Fxq "$filename" "$b_arg"
         then
             continue
         fi
+        
     fi
-
+    
     if [ -f "$file" ];then
         if [[ $r_flag == 'true' ]];then
             if ! [[ $filename =~ $r_arg ]];then

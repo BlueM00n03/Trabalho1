@@ -1,4 +1,9 @@
 #!/bin/bash
+
+function usage(){
+    echo "Usage: ./backup_check.sh dir_trabalho dir_backup">&2
+}
+
 shopt -s dotglob
 
 if [[ -d "$1" ]]; then
@@ -8,6 +13,11 @@ if [[ -d "$1" ]]; then
     fi
 else
     echo "Warning: The source directory ($1) does not exist."
+    exit 1
+fi
+
+if [[ $# != 2 ]]; then
+    usage
     exit 1
 fi
 
@@ -22,9 +32,7 @@ for file in "$target_dir"/*; do
             if [ -f "$file" ];then
                 hashf1=($(md5sum $file))
                 hashf2=($(md5sum $file2))
-                if [[ $hashf1 == $hashf2 ]]; then
-                    echo "file "$file2" "$file" dont differ."
-                else
+                if [[ ! $hashf1 == $hashf2 ]]; then
                     echo "file "$file2" "$file" differ."
                 fi
             fi
