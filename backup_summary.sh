@@ -75,6 +75,8 @@ for file in "$working_dir"/*; do
                             echo "Error: Failed to update $file to $file2"
                         else
                             ((n_updates++))
+                            ((n_copied++))
+                            ((size_copied+=$(stat -c%s "$file")))
                         fi
                     fi
                 elif [[ $(date -r $file +%s) -lt $(date -r $file2 +%s) ]];then
