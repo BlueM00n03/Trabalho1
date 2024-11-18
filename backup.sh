@@ -48,9 +48,6 @@ target_dir="$2"
 for file in "$working_dir"/*; do 
     filename=$(basename "$file")
     if [[ $b_flag == 'true' ]];then
-        echo $file
-        a=$(grep -Fxq "$filename" "$b_arg")
-        echo $?
         if grep -Fxq "$filename" "$b_arg"
         then
             continue
